@@ -1,0 +1,131 @@
+#
+#   ---------- Elgamal Encryption (blocks)
+#
+# (4 blocks-)
+#
+#  ( Add blanks if not divisible by 4)
+# -------------------------------------------------------------------------
+#  Elgamal encoding
+def elgamalencode(s,A,p,g):
+    s=str(s)
+    C=[]
+    m=sum(ord(s[i])*256^i for i in range (len(s)))
+    k=ZZ.random_element(2^100)    
+    C1=power_mod(g,k,p)
+    x=power_mod(A,k,p)
+    C2=Mod(m*x,p)
+    C=[C1,C2]
+    return C
+# --------------------------------------------------------------------------
+# Elgamal decoding
+def elgamaldecode(C,p,e):
+    v=[]
+    n=power_mod(C[0],p-1-e,p)
+    mm=Mod(n*C[1],p)
+    mm=Integer(mm)
+    while mm != 0 :
+        v.append(chr(mm % 256))
+        mm //=256  # this replace mm by floor (n/256)
+    r=''.join(v)
+    return r
+# --------------------------------------------------------------------------
+def encode(s,A,p,g):
+    s=str(s) # making input a string
+    L=[]
+    PL=[]
+#    
+    if len(s) % 4== 1 :
+        s+='   '    # add to s three blanks
+    if len(s) % 4== 2 :
+        s+='  '     # add to s two blanks
+    if len(s) % 4== 3:
+        s+=' '     # add to s one blanks
+#
+#   ---------- Elgamal Encryption (blocks)
+#
+#
+# -------------------------------------------------------------------------
+#  Elgamal encoding
+def elgamalencode(s,A,p,g):
+    s=str(s)
+    C=[]
+    m=sum(ord(s[i])*256^i for i in range (len(s)))
+    k=ZZ.random_element(2^100)    
+    C1=power_mod(g,k,p)
+    x=power_mod(A,k,p)
+    C2=Mod(m*x,p)
+    C=[C1,C2]
+    return C
+# --------------------------------------------------------------------------
+# Elgamal decoding
+def elgamaldecode(C,p,e):
+    v=[]
+    n=power_mod(C[0],p-1-e,p)
+    mm=Mod(n*C[1],p)
+    mm=Integer(mm)
+    while mm != 0 :
+        v.append(chr(mm % 256))
+        mm //=256  # this replace mm by floor (n/256)
+    r=''.join(v)
+    return r
+# --------------------------------------------------------------------------
+def encode(s,A,p,g):
+    s=str(s) # making input a string
+    L=[]
+    PL=[]
+#    
+    if len(s) % 4== 1 :
+        s+='   '    # add to s three blanks
+    if len(s) % 4== 2 :
+        s+='  '     # add to s two blanks
+    if len(s) % 4== 3:
+        s+=' '     # add to s one blanks
+#   
+    n=len(s)/4-1
+    for i in [0..n]:
+        k=4*i
+        PL.append(s[k:k+4])
+#
+    for i in range (0,len(PL)):
+        r=elgamalencode(PL[i],A,p,g)
+        L.append(r)
+    return L
+#-------------------------------------------------
+def decode(L,p,e):
+    PL=[]
+    for i in range (0,len(L)):
+        r=elgamaldecode(L[i],p,e)
+        PL.append(r)
+    return ''.join(PL)
+
+# -----------------------------------------------------------------------------
+#
+#----- A trusted party chooses and publishes : a large prime p and a number g :
+
+p=next_prime(3^123)
+g=137216
+
+# ----------------------------> p and g are public parameters (common parameters of the party) 
+# Alex chooses a private key ( keeps secret ) :  e   ( e must be smaller than or equal to (p-1)
+
+e=next_prime(2^97)
+
+# Alex computes his public key A, using his private key e and the public parameters p and g :
+
+A=power_mod(g,e,p)
+
+# --------------------> Alex publishes his public key : A
+#
+# Bill wants to send to Alex the message :
+
+u='Some day there will be a new world of shining hope for your family, your fatherland and your mankind' 
+C=encode(u,A,p,g)
+
+# -------------------> Bill sends the ciphertext C  to Alex
+# 
+#  Now, Alex received the Ciphertext C from Bill, 
+#  Using his private key e, and the publicparameter p,  Alex deciphers 
+
+r=decode(C,p,e)
+print(C)
+print(r)

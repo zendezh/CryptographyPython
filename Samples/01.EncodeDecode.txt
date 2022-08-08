@@ -1,0 +1,24 @@
+#  Encoding a Phrase in a Number, and decoding the number to a Phrase
+#  -----------------------------------------------------------------
+#
+def encode(s):
+    s=str(s)     # making input a string
+    return sum(ord(s[i])*2048^i for i in range (len(s)))
+#
+# ========================================================
+#
+def decode(n):
+    n=int(n) # making input an integer
+    v=[]
+    while n != 0 :
+        v.append(chr(n % 2048))
+        n //=2048 # this replace n by floor (n/1024)
+    return ''.join(v)
+# ========================================================
+#
+P1=encode('Some day there will be a new world of shining hope for your family, your fatherland and your mankind')
+print(P1)
+P2=decode(P1)
+print(P2)
+
+

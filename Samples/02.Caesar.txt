@@ -1,0 +1,35 @@
+#
+#--------------------- Caesar encryption & decryption -----------------
+#
+def encode(s,k):
+    s=str(s) # making input a string
+    n=sum(((ord(s[i])+ k) % 256)*256^i for i in range (len(s)))
+    v=[]
+    while n != 0 :
+        v.append(chr(n % 256))
+        n //=256  # this replace n by floor(n/256)
+    return ''.join(v)
+#
+# ----------------------------------------------------------
+#
+def decode(s,k):
+    s=str(s) # making input a string
+    n=sum((ord(s[i]) % 256)*256^i for i in range (len(s)))
+    v=[]
+    while n != 0 :
+        m= ((n % 256)+ 256-k) % 256
+        v.append(chr(m))
+        n //=256  # this replace n by floor(n/256)
+    return ''.join(v)
+#
+# ----------------------------------------------------------
+#
+P='Someday there will be a new world of shining hope for your family, your fatherland and your mankind'
+# Choose k = the number of positions for shifting , for example, let k=13
+C=encode(P,13)
+print('The Cipher text now is : ')
+print(C)
+print( )
+print(' Decryption -  get back the original Plaintext : ')
+P1=decode(C,13)
+print(P1)

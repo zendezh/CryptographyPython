@@ -1,0 +1,44 @@
+#------------------------------ RSA Encryption ( Simple case, step 1 )-----------------------------
+
+def encode(s,n,e):
+    s=str(s) # making input a string
+    n=Integer(n)
+    e=Integer(e)
+    m=sum(ord(s[i])*1024^i for i in range (len(s)))
+    C=power_mod(m,e,n)
+    return C
+#---------------------------------------------------
+def decode(C,n,d):
+    C=Integer(C)
+    n=Integer(n)
+    d=Integer(d)
+    P=power_mod(C,d,n)
+    v=[]
+    while P != 0:
+        v.append(chr(P % 1024))
+        P //=1024  # this replace n by floor (n/1024)
+    return ''.join(v)
+#---------------------------------------------------
+#
+p=next_prime(3^230)
+q=next_prime(7^189)
+e=next_prime(2^57)    
+n=p*q
+#
+#------------------->     Publickey is (n,e)
+#
+pn=(p-1)*(q-1)
+d=inverse_mod(e,pn)
+#
+#--------------------> Private (security) key is (n,d)
+#
+u='I hate you more than I can say !, because you love Mathematics !'
+print(' The Plain text is :', u)
+print()
+print()
+c=encode(u,n,e)
+print(' The Cipher text is :', c)
+print()
+print()
+r=decode(c,n,d)
+print(' After decrytion, The original text is :', r)

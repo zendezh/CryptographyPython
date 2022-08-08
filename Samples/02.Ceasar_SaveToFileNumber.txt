@@ -1,0 +1,49 @@
+# --------------------- Caesar encryption -----------------
+#
+def encode(s, h):
+    s = str(s)  # making input a string
+    return sum(((ord(s[i]) + h) % 1024)*1024**i for i in range(len(s)))
+#
+# =========================================================================
+#
+
+
+P = 'Someday there will be a new world of shining hope for your family, your fatherland and your mankind'
+# Choose k = the number of positions for shifting , for example, let k=13
+k = 13
+C = encode(P, k)
+print(' The original message is converted to number : ', C)
+print()
+#
+# save to file : CipherText.Caesar
+#
+file = open('C:\\Examples\\Caesar', 'w')
+file.write(str(encode(P, k)))
+file.close()
+
+
+#
+# =========================================================================
+#  --------------------- Caesar decryption -----------------
+#
+def decode(n, k):
+    n = int(n)
+    v = []
+    while n != 0:
+        m = ((n % 1024) + 1024-k) % 1024
+        v.append(chr(m))
+        n //= 1024  # this replace n by floor(n/1024)
+    return ''.join(v)
+#
+# ----------------------------------------------------------
+#
+
+
+print(' Decryption -  get back the original Plaintext : ')
+h = 13
+file = open('C:\\Examples\\Caesar', 'r')
+print(decode(file.read(), h))
+file.close()
+
+
+

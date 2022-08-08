@@ -1,0 +1,109 @@
+#
+#------------------------ RSA-Blocks Encryption and Digital Signature
+#
+#
+#
+def encode1(s,n,e):
+    s=str(s) # making input a string
+    r1=sum(ord(s[i])*2048^i for i in range (len(s)))
+    r2=power_mod(r1,e,n) 
+    return r2
+#-------------------------------------------------
+def decode1(m,n,d):
+    n=power_mod(m,d,n)
+    n=Integer(n)
+    v=[]
+    while n != 0 :
+        v.append(chr(n % 2048))
+        n //=2048  # this replace n by floor (n/2048)
+    return ''.join(v)
+#-------------------------------------------------
+def encode(s,n,e):
+    s=str(s) # making input a string
+    L=[]
+    PL=[]
+    m=len(s)/4-1
+    for i in [0..m]:
+        k=4*i
+        PL.append(s[k:k+4])
+    if len(s) % 4== 1 :
+        PL.append(s[len(s)-1])
+    if len(s) % 4== 2 :
+        PL.append(s[len(s)-2 : len(s)])
+    if len(s) % 4== 3:
+        PL.append(s[len(s)-3: len(s)])  
+    for i in range (0,len(PL)):
+        r=encode1(PL[i],n,e)
+        L.append(r)
+    return L
+#-------------------------------------------------
+def decode(L,n,d):
+    PL=[]
+    for i in range (0,len(L)):
+        r=decode1(L[i],n,d)
+        PL.append(r)
+    return ''.join(PL)
+#-------------------------------------------------------------------------------------------------------------------------------
+#
+#--------------------- Bill set up his public key by :
+pBill=next_prime(3^75)
+qBill=next_prime(7^49)
+eBill=next_prime(2^63)    
+nBill=pBill*qBill
+#------------------->     Bill's Publickey is (nBill,eBill), Bill publishes nBill and eBill to all members of his party
+#-------------------->    Be careful, Bill keeps the numbers pBill and qBill secret !
+#------------------- and Bill get his private key by :
+pn=(pBill-1)*(qBill-1)
+dBill=inverse_mod(eBill,pn)
+#
+#--------------------> Bill's Private key is (nBill,dBill) ( Bill keeps the number dBill secret !)
+#
+#
+#--------------------- Similarly,  Alex set up his public key :
+pAlex=next_prime(11^27)
+qAlex=next_prime(7^62)
+eAlex=next_prime(3^47)    
+nAlex=pAlex*qAlex
+#------------------->     Alex's Publickey is (nAlex,eAlex), Alex publishes nAlex and eAlex to all members of his party
+#-------------------->    Be careful, Alex keeps the numbers pAlex and qAlex secret !
+#
+#------------------- and Alex get his private key :
+pm=(pAlex-1)*(qAlex-1)
+dAlex=inverse_mod(eAlex,pm)
+#
+#--------------------> Alex's Private key is (nAlex,dAlex) (Alex keeps the number dAlex secret !)
+#
+#-------------------- Now Alex wants send a message to Bill, he must use the public key of Bill : nBill and eBill
+#
+u='I hate you more than I can say, because you love Mathematics! ? ???????? ???? ??????, ??? ???? ???????, ?????? ??? ?? ?????? ??????????!'
+c=encode(u,nBill,eBill)
+#-------------------------  So the ciphertext which Alex sends to Bill is c 
+#
+#-------------- and Alex set up his digital signature by using a number DD and computing SS through his private key dAlex:
+DD=541236478234682
+SS=power_mod(DD,dAlex,nAlex)
+# -------------- Alex digital signature is (DD, SS) , Alex send this pair to Bill 
+#
+# -------------- Now , Bill receives the cipertext c from Alex, Bill decodes c by using Bill's private key (nBill, dBill)
+r=decode(c,nBill,dBill)
+#
+#
+print(' Alex wants to send the massage to Bill : ', u)
+print()
+# --------- Bill prints the cipertext from Alex and the decipher-text
+print('Bill prints the cipertext which he received from Alex : ')
+print()
+print(c)
+print()
+print('Bill prints the decipher-text (original plain text) after decryption ')
+print()
+print(r)
+print()
+#-------- Bill checks the digital signature of Alex, by using Alex's digital signature (DD,SS) and Alex's public key (nAlex, eAlex)
+print('Bill checks the digital signature of Alex')
+print()
+DD==power_mod(SS,eAlex,nAlex)
+
+
+
+

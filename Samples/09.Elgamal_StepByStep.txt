@@ -1,0 +1,50 @@
+#
+#   ---------- Elgamal Encryption ( no blocks)
+#
+# -----------------------------------------------------------------
+# Encoding a Phrase in a Number
+
+def encode(s):                           
+    s=str(s)                            
+    return sum(ord(s[i])*256^i for i in range (len(s)))
+# -----------------------------------------------------------------
+#  Decoding the number to a Phrase
+
+def decode(n):
+    n=Integer(n) 
+    v=[]
+    while n != 0 :
+        v.append(chr(n % 256))
+        n //=256  # this replace n by floor (n/256)
+    return ''.join(v)
+# -----------------------------------------------------------------
+#
+#----- A trusted party chooses and publishes : a large prime p and a number g :
+p=next_prime(2^593)
+g=13
+# ----------------------------> p and g are public parameters (common parameters of the party) 
+# Alex chooses a private key ( keeps secret ) :  e   ( e must be smaller than or equal to (p-1) )
+e=next_prime(2^89)
+# Alex computes his public key A, using his private key e and the public parameters p and g :
+A=power_mod(g,e,p)
+# --------------------> Alex publishes his public key : A
+#
+# Bill wants to send to Alex the message 'I love you more than I can say' 
+# ----> first, endcoding the message to a number m
+m=encode('I love you more than I can say ');
+# Bill chooses a random number k ( in the following, Bill chooses k about 2^100)
+k=ZZ.random_element(2^100)
+# Using the Alex's public key A, and the public parameter p and g, Bill computes C1 and C2 :
+C1=power_mod(g,k,p)
+x=power_mod(A,k,p)
+C2=Mod(m*x,p)
+# -------------------> Bill sends the ciphertext (C1, C2) to Alex
+# 
+#  Now, Alex received the Ciphertext (C1,C2) from Bill, 
+#  Using his private key e, and the publicparameter p, 
+#      Alex deciphers (C1,C2) to get the number mm ( must be equal to m, the plaintext from Bill)
+#  
+n=power_mod(C1,p-1-e,p)
+mm=Mod(n*C2,p)
+#  Alex tranverses mm -----------> the original message from Bill
+decode(mm)
